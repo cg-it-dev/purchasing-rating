@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { RatingModule } from './Rating/rating.module';
 import { RatingEntity } from './Rating/entity/rating.entity';
 import { RolesGuard } from './guards/roles.guard';
+import { UserMiddleware } from './middleware/user.middleware';
 
 @Module({
   imports: [
@@ -30,4 +31,9 @@ import { RolesGuard } from './guards/roles.guard';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Jalankan UserMiddleware di semua rute agar req.user terisi SEBELUM RolesGuard dipanggil
+    consumer.apply(UserMiddleware).forRoutes('*');
+  }
+}
