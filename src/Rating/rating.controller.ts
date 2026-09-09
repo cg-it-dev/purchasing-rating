@@ -15,8 +15,7 @@ import { CreateRatingDto } from './DTOs/create.dto';
 import { CurrentUser } from 'src/decorators/user.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/decorators/role.decorator';
-import * as express from 'express';
-import { Request, Response } from 'express';
+import * as express from 'express'; // Menggunakan namespace import untuk mengisolasi tipe data Express
 
 @Controller('rating')
 @UseGuards(RolesGuard)
@@ -25,7 +24,6 @@ export class RatingController {
 
   // 1. Dashboard User (Form & List Penilaian Pribadi)
   @Get()
-  // Hapus @Render('user-dashboard') di sini agar tidak bentrok dengan res.render() / res.json()
   async getUserDashboard(
     @CurrentUser() user: any,
     @Req() req: express.Request,
@@ -33,7 +31,6 @@ export class RatingController {
   ) {
     const listPenilaian = await this.ratingService.findByUserId(user.sub);
 
-    // Ambil header 'accept' via helper method express atau req.headers['accept']
     const acceptHeader = req.get('accept') || req.headers['accept'] || '';
     const acceptsHtml =
       typeof acceptHeader === 'string' && acceptHeader.includes('text/html');
@@ -46,7 +43,6 @@ export class RatingController {
       });
     }
 
-    // Return JSON jika dipanggil via API/Fetch
     return res.json({
       berhasil: true,
       user,
@@ -56,13 +52,12 @@ export class RatingController {
 
   // 2. Action Create Penilaian
   @Post('create')
-  @Roles('staff', 'leaders', 'vice leader', 'cashgampang') // Guard khusus multi-group
+  @Roles('staff', 'leaders', 'vice leader', 'cashgampang')
   @Redirect('/rating')
   async createPenilaian(
     @CurrentUser() user: any,
     @Body() dto: CreateRatingDto,
   ) {
-    // Normalisasi array items dari form (support multipart/form-data & URL-encoded)
     if (typeof dto.items === 'string') {
       try {
         dto.items = JSON.parse(dto.items);
@@ -76,10 +71,11 @@ export class RatingController {
 
   // 3. Dashboard Atasan (Review All Penilaian)
   @Get('review')
-  @Roles('atasan', 'admin') // Role terpusat dari Authentik via Kong
+  @Roles('atasan', 'admin')
   @Render('atasan-dashboard')
   async getAtasanReview(@CurrentUser() user: any) {
-    const allPenilaian = this.ratingService.findAll();
+    // FIX: Tambahkan await karena findAll() mengembalikan Promise
+    const allPenilaian = await this.ratingService.findAll();
     return {
       user,
       allPenilaian,

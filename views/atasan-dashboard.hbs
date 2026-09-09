@@ -1,6 +1,7 @@
 <html lang='id'>
   <head>
     <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
     <title>Review Penilaian - Dashboard Atasan</title>
     <script src='https://cdn.tailwindcss.com'></script>
   </head>
@@ -16,9 +17,11 @@
             Purchasing</p>
         </div>
         <a
-          href='/penilaian'
-          class='text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700'
-        >&larr; Kembali ke Form User</a>
+          href='/rating'
+          class='text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium transition'
+        >
+          &larr; Kembali ke Form User
+        </a>
       </div>
 
       <div
@@ -41,34 +44,51 @@
                   <p class='font-bold text-gray-800'>{{this.id}}</p>
                   <p class='text-xs text-blue-600'>By: {{this.nama_user}}</p>
                 </td>
-                <td class='p-4 font-medium'>{{this.nama_purchasing}}</td>
-                <td class='p-4 text-xs text-gray-600'>
-                  <p>SPP: {{this.tgl_spp}}</p>
-                  <p>Masuk: {{this.tgl_masuk}} ({{this.jangka_waktu}} Hari)</p>
+                <td
+                  class='p-4 font-medium text-gray-700'
+                >{{this.nama_purchasing}}</td>
+                <td class='p-4 text-xs text-gray-600 space-y-1'>
+                  <p><span class='font-semibold'>SPP:</span>
+                    {{this.tgl_spp}}</p>
+                  <p><span class='font-semibold'>Masuk:</span>
+                    {{this.tgl_masuk}}
+                    ({{this.jangka_waktu}}
+                    Hari)</p>
                 </td>
                 <td class='p-4'>
                   <ul class='list-disc list-inside text-xs space-y-1'>
                     {{#each this.items}}
                       <li>
-                        <span class='font-semibold'>{{this.nama_barang}}</span>
+                        <span
+                          class='font-semibold text-gray-800'
+                        >{{this.nama_barang}}</span>
                         (Kec:
                         <span
-                          class='text-green-600'
+                          class='text-green-600 font-bold'
                         >{{this.nilai_kecepatan}}</span>, Qual:
                         <span
-                          class='text-blue-600'
+                          class='text-blue-600 font-bold'
                         >{{this.nilai_kualitas}}</span>)
                       </li>
                     {{/each}}
                   </ul>
                 </td>
                 <td class='p-4 text-center'>
-                  <img
-                    src='{{this.qr_ttd}}'
-                    alt='TTD QR'
-                    class='w-16 h-16 mx-auto border p-1 rounded bg-white'
-                  />
+                  {{#if this.qr_ttd}}
+                    <img
+                      src='{{this.qr_ttd}}'
+                      alt='TTD QR'
+                      class='w-16 h-16 mx-auto border p-1 rounded bg-white shadow-sm'
+                    />
+                  {{else}}
+                    <span class='text-xs text-gray-400 italic'>No QR</span>
+                  {{/if}}
                 </td>
+              </tr>
+            {{else}}
+              <tr>
+                <td colspan='5' class='p-6 text-center text-gray-500'>Belum ada
+                  data penilaian yang masuk.</td>
               </tr>
             {{/each}}
           </tbody>
