@@ -15,7 +15,7 @@ import { CreateRatingDto } from './DTOs/create.dto';
 import { CurrentUser } from 'src/decorators/user.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/decorators/role.decorator';
-import * as express from 'express'; // Menggunakan namespace import untuk mengisolasi tipe data Express
+import * as express from 'express';
 
 @Controller('rating')
 @UseGuards(RolesGuard)
@@ -52,7 +52,15 @@ export class RatingController {
 
   // 2. Action Create Penilaian
   @Post('create')
-  @Roles('staff', 'leaders', 'vice leader', 'cashgampang')
+  @Roles(
+    'staff',
+    'leaders',
+    'vice leader',
+    'secretary',
+    'director',
+    'cashgampang',
+    'purchasing',
+  )
   @Redirect('/rating')
   async createPenilaian(
     @CurrentUser() user: any,
@@ -69,13 +77,22 @@ export class RatingController {
     await this.ratingService.create(dto, user);
   }
 
-  // 3. Dashboard Atasan (Review All Penilaian)
+  // 3. Dashboard Review Penilaian (Filter Dynamic via Service)
   @Get('review')
-  @Roles('atasan', 'admin')
+  @Roles(
+    'staff',
+    'leaders',
+    'vice leader',
+    'secretary',
+    'director',
+    'cashgampang',
+    'purchasing',
+  )
   @Render('atasan-dashboard')
   async getAtasanReview(@CurrentUser() user: any) {
-    // FIX: Tambahkan await karena findAll() mengembalikan Promise
-    const allPenilaian = await this.ratingService.findAll();
+    // Matriks akses (Secretary/Director -> ALL, Leader/Vice -> Same Divisi, Staff -> Own Data)
+    const allPenilaian = await this.ratingService.findForReview(user);
+
     return {
       user,
       allPenilaian,
