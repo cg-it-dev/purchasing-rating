@@ -1,0 +1,80 @@
+<html lang='id'>
+  <head>
+    <meta charset='UTF-8' />
+    <title>Review Penilaian - Dashboard Atasan</title>
+    <script src='https://cdn.tailwindcss.com'></script>
+  </head>
+  <body class='bg-gray-100 p-8'>
+    <div class='max-w-6xl mx-auto space-y-6'>
+
+      <div
+        class='bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center'
+      >
+        <div>
+          <h1 class='text-2xl font-bold text-gray-800'>Dashboard Review Atasan</h1>
+          <p class='text-gray-500 text-sm'>Monitoring Seluruh Penilaian
+            Purchasing</p>
+        </div>
+        <a
+          href='/penilaian'
+          class='text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700'
+        >&larr; Kembali ke Form User</a>
+      </div>
+
+      <div
+        class='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'
+      >
+        <table class='w-full text-left border-collapse'>
+          <thead>
+            <tr class='bg-gray-800 text-white text-xs uppercase'>
+              <th class='p-4'>ID / User Penilai</th>
+              <th class='p-4'>Detail Tim Purchasing</th>
+              <th class='p-4'>Tanggal SPP / Masuk</th>
+              <th class='p-4'>Barang Dinilai</th>
+              <th class='p-4 text-center'>TTD QR User</th>
+            </tr>
+          </thead>
+          <tbody class='divide-y text-sm'>
+            {{#each allPenilaian}}
+              <tr class='hover:bg-gray-50'>
+                <td class='p-4'>
+                  <p class='font-bold text-gray-800'>{{this.id}}</p>
+                  <p class='text-xs text-blue-600'>By: {{this.nama_user}}</p>
+                </td>
+                <td class='p-4 font-medium'>{{this.nama_purchasing}}</td>
+                <td class='p-4 text-xs text-gray-600'>
+                  <p>SPP: {{this.tgl_spp}}</p>
+                  <p>Masuk: {{this.tgl_masuk}} ({{this.jangka_waktu}} Hari)</p>
+                </td>
+                <td class='p-4'>
+                  <ul class='list-disc list-inside text-xs space-y-1'>
+                    {{#each this.items}}
+                      <li>
+                        <span class='font-semibold'>{{this.nama_barang}}</span>
+                        (Kec:
+                        <span
+                          class='text-green-600'
+                        >{{this.nilai_kecepatan}}</span>, Qual:
+                        <span
+                          class='text-blue-600'
+                        >{{this.nilai_kualitas}}</span>)
+                      </li>
+                    {{/each}}
+                  </ul>
+                </td>
+                <td class='p-4 text-center'>
+                  <img
+                    src='{{this.qr_ttd}}'
+                    alt='TTD QR'
+                    class='w-16 h-16 mx-auto border p-1 rounded bg-white'
+                  />
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </body>
+</html>
