@@ -7,12 +7,16 @@ import {
   Redirect,
   UseGuards,
   BadRequestException,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './DTOs/create.dto';
 import { CurrentUser } from 'src/decorators/user.decorator';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from 'src/decorators/role.decorator';
+import * as express from 'express';
+import { Request, Response } from 'express';
 
 @Controller('rating')
 @UseGuards(RolesGuard)
@@ -21,16 +25,33 @@ export class RatingController {
 
   // 1. Dashboard User (Form & List Penilaian Pribadi)
   @Get()
-  @Render('user-dashboard') // Otomatis render Handlebars
-  async getUserDashboard(@CurrentUser() user: any) {
+  // Hapus @Render('user-dashboard') di sini agar tidak bentrok dengan res.render() / res.json()
+  async getUserDashboard(
+    @CurrentUser() user: any,
+    @Req() req: express.Request,
+    @Res() res: express.Response,
+  ) {
     const listPenilaian = await this.ratingService.findByUserId(user.sub);
 
-    // Kirim data langsung ke template Handlebars (bukan JSON)
-    return {
-      title: 'Dashboard Penilaian',
+    // Ambil header 'accept' via helper method express atau req.headers['accept']
+    const acceptHeader = req.get('accept') || req.headers['accept'] || '';
+    const acceptsHtml =
+      typeof acceptHeader === 'string' && acceptHeader.includes('text/html');
+
+    if (acceptsHtml) {
+      return res.render('user-dashboard', {
+        title: 'Dashboard Penilaian',
+        user,
+        listPenilaian,
+      });
+    }
+
+    // Return JSON jika dipanggil via API/Fetch
+    return res.json({
+      berhasil: true,
       user,
       listPenilaian,
-    };
+    });
   }
 
   // 2. Action Create Penilaian
