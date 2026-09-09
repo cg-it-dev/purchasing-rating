@@ -1,207 +1,52 @@
 <html lang='id'>
   <head>
     <meta charset='UTF-8' />
-    <title>Dashboard Penilaian Purchasing</title>
-    <script src='https://cdn.tailwindcss.com'></script>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>{{title}}</title>
+    <link rel='stylesheet' href='/css/style.css' />
   </head>
-  <body class='bg-gray-100 p-8'>
-    <div class='max-w-5xl mx-auto space-y-8'>
+  <body>
+    <div class='container'>
+      <h1>Selamat Datang, {{user.name}}!</h1>
+      <p>Email: {{user.email}}</p>
+      <p>Group: {{user.groups}}</p>
 
-      <!-- Header -->
-      <div
-        class='bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center'
-      >
+      <hr />
+
+      <h2>Form Penilaian Purchasing</h2>
+      <form action='/rating/create' method='POST'>
         <div>
-          <h1 class='text-2xl font-bold text-gray-800'>Form Penilaian Purchasing</h1>
-          <p class='text-gray-500 text-sm'>Login sebagai:
-            <span
-              class='font-semibold text-blue-600'
-            >{{user.preferred_username}}</span></p>
+          <label for='rating'>Nilai:</label>
+          <input
+            type='number'
+            id='rating'
+            name='score'
+            min='1'
+            max='5'
+            required
+          />
         </div>
-        <a
-          href='/penilaian/review'
-          class='text-sm bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700'
-        >Akses Atasan &rarr;</a>
-      </div>
-
-      <!-- Form Penilaian -->
-      <form
-        action='/penilaian/create'
-        method='POST'
-        id='formPenilaian'
-        class='bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6'
-      >
-        <input type='hidden' name='items' id='itemsInput' />
-
-        <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-          <div>
-            <label
-              class='block text-xs font-bold text-gray-600 uppercase mb-1'
-            >Tgl SPP</label>
-            <input
-              type='date'
-              name='tgl_spp'
-              required
-              class='w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none'
-            />
-          </div>
-          <div>
-            <label
-              class='block text-xs font-bold text-gray-600 uppercase mb-1'
-            >Tgl Masuk</label>
-            <input
-              type='date'
-              name='tgl_masuk'
-              required
-              class='w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none'
-            />
-          </div>
-          <div>
-            <label
-              class='block text-xs font-bold text-gray-600 uppercase mb-1'
-            >Jangka Waktu (Hari)</label>
-            <input
-              type='number'
-              name='jangka_waktu'
-              required
-              placeholder='Contoh: 7'
-              class='w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none'
-            />
-          </div>
-          <div>
-            <label
-              class='block text-xs font-bold text-gray-600 uppercase mb-1'
-            >Nama Purchasing</label>
-            <input
-              type='text'
-              name='nama_purchasing'
-              required
-              placeholder='Nama Staf Purchasing'
-              class='w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none'
-            />
-          </div>
+        <div>
+          <label for='comment'>Catatan:</label>
+          <textarea id='comment' name='comment'></textarea>
         </div>
-
-        <!-- Section Dynamic Items -->
-        <div class='border-t pt-4'>
-          <div class='flex justify-between items-center mb-3'>
-            <h3 class='font-bold text-gray-700'>Daftar Barang & Nilai</h3>
-            <button
-              type='button'
-              onclick='addRow()'
-              class='bg-blue-50 text-blue-600 font-semibold text-xs px-3 py-1.5 rounded-lg border border-blue-200 hover:bg-blue-100'
-            >+ Tambah Barang</button>
-          </div>
-
-          <table class='w-full text-left text-sm' id='itemTable'>
-            <thead>
-              <tr class='bg-gray-50 text-gray-500 text-xs uppercase'>
-                <th class='p-2'>Nama Barang</th>
-                <th class='p-2 w-32'>Nilai Kecepatan (1-100)</th>
-                <th class='p-2 w-32'>Nilai Kualitas (1-100)</th>
-                <th class='p-2 w-12'>Aksi</th>
-              </tr>
-            </thead>
-            <tbody id='itemContainer'>
-              <!-- Row awal -->
-              <tr class='item-row border-b'>
-                <td class='p-2'><input
-                    type='text'
-                    class='item-nama w-full border rounded p-1.5'
-                    required
-                    placeholder='Laptop, ATK, dll'
-                  /></td>
-                <td class='p-2'><input
-                    type='number'
-                    class='item-kecepatan w-full border rounded p-1.5'
-                    min='1'
-                    max='100'
-                    required
-                  /></td>
-                <td class='p-2'><input
-                    type='number'
-                    class='item-kualitas w-full border rounded p-1.5'
-                    min='1'
-                    max='100'
-                    required
-                  /></td>
-                <td class='p-2'><button
-                    type='button'
-                    onclick='removeRow(this)'
-                    class='text-red-500 font-bold'
-                  >×</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <button
-          type='submit'
-          class='w-full bg-blue-600 text-white font-bold py-2.5 rounded-lg hover:bg-blue-700'
-        >Simpan Penilaian & TTD Digital</button>
+        <button type='submit'>Kirim Penilaian</button>
       </form>
 
-      <!-- Riwayat Penilaian -->
-      <div
-        class='bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4'
-      >
-        <h2 class='text-lg font-bold text-gray-800'>Riwayat Penilaian Saya</h2>
+      <hr />
+
+      <h2>Riwayat Penilaian</h2>
+      <ul>
         {{#each listPenilaian}}
-          <div
-            class='border rounded-lg p-4 flex justify-between items-center bg-gray-50'
-          >
-            <div class='space-y-1'>
-              <p class='font-bold text-gray-800'>ID:
-                {{this.id}}
-                | Purchasing:
-                {{this.nama_purchasing}}</p>
-              <p class='text-xs text-gray-500'>SPP:
-                {{this.tgl_spp}}
-                | Masuk:
-                {{this.tgl_masuk}}
-                | Durasi:
-                {{this.jangka_waktu}}
-                Hari</p>
-              <p
-                class='text-xs font-semibold text-blue-600'
-              >{{this.items.length}} Barang Dinilai</p>
-            </div>
-            <div class='text-center'>
-              <img
-                src='{{this.qr_ttd}}'
-                alt='TTD QR'
-                class='w-20 h-20 mx-auto border p-1 bg-white rounded'
-              />
-              <span class='text-[10px] text-gray-400 block mt-1'>TTD Digital
-                Verified</span>
-            </div>
-          </div>
+          <li>
+            <strong>Score: {{this.score}}</strong>
+            -
+            {{this.comment}}
+          </li>
+        {{else}}
+          <li>Belum ada data penilaian.</li>
         {{/each}}
-      </div>
-
+      </ul>
     </div>
-
-    <script>
-      function addRow() { const container =
-      document.getElementById('itemContainer'); const tr =
-      document.createElement('tr'); tr.className = 'item-row border-b';
-      tr.innerHTML = ` <td class="p-2"><input type="text" class="item-nama
-      w-full border rounded p-1.5" required></td> <td class="p-2"><input
-      type="number" class="item-kecepatan w-full border rounded p-1.5" min="1"
-      max="100" required></td> <td class="p-2"><input type="number"
-      class="item-kualitas w-full border rounded p-1.5" min="1" max="100"
-      required></td> <td class="p-2"><button type="button"
-      onclick="removeRow(this)" class="text-red-500 font-bold">×</button></td>
-      `; container.appendChild(tr); } function removeRow(btn) { const rows =
-      document.querySelectorAll('.item-row'); if (rows.length > 1)
-      btn.closest('tr').remove(); }
-      document.getElementById('formPenilaian').addEventListener('submit',
-      function (e) { const rows = document.querySelectorAll('.item-row'); const
-      items = []; rows.forEach(row => { items.push({ nama_barang:
-      row.querySelector('.item-nama').value, nilai_kecepatan:
-      parseInt(row.querySelector('.item-kecepatan').value), nilai_kualitas:
-      parseInt(row.querySelector('.item-kualitas').value) }); });
-      document.getElementById('itemsInput').value = JSON.stringify(items); });
-    </script>
   </body>
 </html>
